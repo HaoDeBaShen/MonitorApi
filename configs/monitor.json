@@ -1,0 +1,755 @@
+{
+  "types": [
+    {
+      "name": "流量计",
+      "code": "flow",
+      "type": "flow",
+      "short": "F",
+      "layer": {
+        "icon": "flow-circle.svg"
+      },
+      "display": [
+        "quantity",
+        "velocity",
+        "level"
+      ],
+      "preferred": "quantity"
+    },
+    {
+      "name": "雨量计",
+      "code": "rain",
+      "type": "rain",
+      "short": "R",
+      "layer": {
+        "icon": "rain-circle.svg"
+      },
+      "display": [
+        "rain"
+      ],
+      "preferred": "rain"
+    },
+    {
+      "name": "液位计",
+      "code": "level",
+      "type": "level",
+      "short": "L",
+      "layer": {
+        "icon": "level-circle.svg"
+      },
+      "display": [
+        "level"
+      ],
+      "preferred": "level"
+    },
+    {
+      "name": "浊度计",
+      "code": "SS",
+      "type": "SS",
+      "short": "S",
+      "layer": {
+        "icon": "ss-circle.svg"
+      },
+      "display": [
+        "TSS"
+      ],
+      "preferred": "TSS"
+    },
+    {
+      "name": "温度计",
+      "code": "temperature",
+      "type": "temperature",
+      "short": "T",
+      "layer": {
+        "icon": "temperature-circle.svg"
+      },
+      "display": [
+        "temperature"
+      ],
+      "preferred": "temperature"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "quantity",
+      "code": "quantity",
+      "description": "流量",
+      "series_type": "line",
+      "series_color": "#2284ed",
+      "unit_type": 1,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "velocity",
+      "code": "velocity",
+      "description": "流速",
+      "series_type": "line",
+      "series_color": "#e55915",
+      "unit_type": 2,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "level",
+      "code": "level",
+      "description": "液位",
+      "series_type": "line",
+      "series_color": "#a1cf48",
+      "unit_type": 3,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "voltage",
+      "code": "voltage",
+      "description": "电压",
+      "series_type": "line",
+      "series_color": "#891bb0",
+      "unit_type": 8,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "TSS",
+      "code": "TSS",
+      "description": "悬浮物",
+      "series_type": "line",
+      "series_color": "#891bb0",
+      "unit_type": 7,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "temperature",
+      "code": "temperature",
+      "description": "温度",
+      "series_type": "line",
+      "series_color": "#891bb0",
+      "unit_type": 6,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "rain",
+      "code": "rain",
+      "description": "雨量",
+      "series_type": "bar",
+      "series_color": "#6ED1E1",
+      "unit_type": 4,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "DO",
+      "code": "DO",
+      "description": "溶解氧",
+      "unit_type": 7,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "ORP",
+      "code": "ORP",
+      "description": "氧化还原电位",
+      "unit_type": 8,
+      "unit": 2,
+      "display_unit": 2
+    },
+    {
+      "name": "COD",
+      "code": "COD",
+      "description": "COD",
+      "unit_type": 7,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "NH3N",
+      "code": "NH3N",
+      "description": "氨氮",
+      "unit_type": 7,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "TKN",
+      "code": "TKN",
+      "description": "钾氮",
+      "unit_type": 7,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "TN",
+      "code": "TN",
+      "description": "总氮",
+      "unit_type": 7,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "TP",
+      "code": "TP",
+      "description": "总磷",
+      "unit_type": 7,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "M10",
+      "code": "M10",
+      "description": "土壤墒情",
+      "unit_type": 10,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "RADIO",
+      "code": "RADIO",
+      "description": "辐射",
+      "unit_type": 11,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "EJ",
+      "code": "EJ",
+      "description": "蒸发",
+      "unit_type": 11,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "UC",
+      "code": "UC",
+      "description": "风向",
+      "unit_type": 13,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "US",
+      "code": "US",
+      "description": "风速",
+      "unit_type": 2,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "pressure",
+      "code": "pressure",
+      "description": "气压",
+      "unit_type": 12,
+      "unit": 1,
+      "display_unit": 1
+    },
+    {
+      "name": "humidity",
+      "code": "humidity",
+      "description": "湿度",
+      "unit_type": 10,
+      "unit": 1,
+      "display_unit": 1
+    }
+  ],
+  "subjects": [
+    {
+      "name": "设施",
+      "code": "lid"
+    },
+    {
+      "name": "项目",
+      "code": "project"
+    },
+    {
+      "name": "管网",
+      "code": "pipe"
+    },
+    {
+      "name": "河道",
+      "code": "river"
+    },
+    {
+      "name": "其它",
+      "code": "none"
+    }
+  ],
+  "basins": [
+    {
+      "name": "西河1",
+      "code": "西河1"
+    },
+    {
+      "name": "西河2",
+      "code": "西河2"
+    },
+    {
+      "name": "其它",
+      "code": "none"
+    }
+  ],
+  "units": [
+    {
+      "name": "流量",
+      "code": 1,
+      "types": [
+        {
+          "name": "m³/s",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        },
+        {
+          "name": "L/s",
+          "code": 2,
+          "coeff": 1000,
+          "default": false
+        },
+        {
+          "name": "m³/h",
+          "code": 3,
+          "coeff": 3600,
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "流速",
+      "code": 2,
+      "types": [
+        {
+          "name": "m/s",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "液位",
+      "code": 3,
+      "types": [
+        {
+          "name": "m",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "雨量",
+      "code": 4,
+      "types": [
+        {
+          "name": "mm",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "雨强",
+      "code": 5,
+      "types": [
+        {
+          "name": "mm/hr",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "温度",
+      "code": 6,
+      "types": [
+        {
+          "name": "℃",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "浓度",
+      "code": 7,
+      "types": [
+        {
+          "name": "mg/L",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "电压",
+      "code": 8,
+      "types": [
+        {
+          "name": "V",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        },
+        {
+          "name": "mV",
+          "code": 2,
+          "coeff": 1000,
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "重量",
+      "code": 9,
+      "types": [
+        {
+          "name": "mg",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        },
+        {
+          "name": "g",
+          "code": 2,
+          "coeff": 1000,
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "比例",
+      "code": 10,
+      "types": [
+        {
+          "name": "%",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        },
+        {
+          "name": "‰",
+          "code": 2,
+          "coeff": 0.1,
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "辐照度",
+      "code": 11,
+      "types": [
+        {
+          "name": "W/m2",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "压强",
+      "code": 12,
+      "types": [
+        {
+          "name": "Pa",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "无单位",
+      "code": 13,
+      "types": [
+        {
+          "name": "-",
+          "code": 1,
+          "coeff": 1,
+          "default": true
+        }
+      ]
+    }
+  ],
+  "electrics": [
+    {
+      "volt": 12.6,
+      "percent": 100
+    },
+    {
+      "volt": 12.24,
+      "percent": 90
+    },
+    {
+      "volt": 12,
+      "percent": 80
+    },
+    {
+      "volt": 11.8,
+      "percent": 70
+    },
+    {
+      "volt": 11.6,
+      "percent": 60
+    },
+    {
+      "volt": 11.4,
+      "percent": 50
+    },
+    {
+      "volt": 11.3,
+      "percent": 30
+    },
+    {
+      "volt": 11,
+      "percent": 10
+    }
+  ],
+  "principles": [
+    {
+      "name": "项目边界",
+      "code": "PD"
+    },
+    {
+      "name": "行政划界",
+      "code": "AD"
+    },
+    {
+      "name": "排口下游",
+      "code": "OD"
+    },
+    {
+      "name": "暗涵出入口",
+      "code": "HC"
+    },
+    {
+      "name": "水体交汇",
+      "code": "WC"
+    },
+    {
+      "name": "重点区段",
+      "code": "KS"
+    },
+    {
+      "name": "雨水口",
+      "code": "RO"
+    },
+    {
+      "name": "污染风险",
+      "code": "PR"
+    },
+    {
+      "name": "引水工程",
+      "code": "WP"
+    },
+    {
+      "name": "考核断面",
+      "code": "ES"
+    },
+    {
+      "name": "生态设施",
+      "code": "EF"
+    }
+  ],
+  "providers": [
+    {
+      "name": "武汉新锋",
+      "code": "WHXF",
+      "url": "http://132.232.115.20:8895/datas/dosearchData",
+      "indexes": [
+        {
+          "name": "流量",
+          "code": "sbl1",
+          "unit": "m³/h"
+        },
+        {
+          "name": "流速",
+          "code": "va",
+          "unit": "m/s"
+        },
+        {
+          "name": "液位",
+          "code": "z",
+          "unit": "m"
+        },
+        {
+          "name": "雨量",
+          "code": "pn05",
+          "unit": "mm"
+        },
+        {
+          "name": "电压",
+          "code": "vt",
+          "unit": "V"
+        },
+        {
+          "name": "温度",
+          "code": "ai",
+          "unit": "℃"
+        },
+        {
+          "name": "流量2",
+          "code": "sbl2",
+          "unit": "m³/h"
+        },
+        {
+          "name": "流速2",
+          "code": "vj",
+          "unit": "m/s"
+        },
+        {
+          "name": "液位2",
+          "code": "zb",
+          "unit": "m"
+        },
+        {
+          "name": "悬浮物",
+          "code": "ss",
+          "unit": "mg/L"
+        },
+        {
+          "name": "氨氮",
+          "code": "nh4n",
+          "unit": "mg/L"
+        },
+        {
+          "name": "总磷",
+          "code": "tp",
+          "unit": "mg/L"
+        },
+        {
+          "name": "总氮",
+          "code": "tn",
+          "unit": "mg/L"
+        },
+        {
+          "name": "溶解氧",
+          "code": "do",
+          "unit": "mg/L"
+        },
+        {
+          "name": "氧化还原电位",
+          "code": "redox",
+          "unit": "mV"
+        },
+        {
+          "name": "COD",
+          "code": "CODMN",
+          "unit": "mg/L"
+        },
+        {
+          "name": "土壤墒情",
+          "code": "m10",
+          "unit": "%"
+        },
+        {
+          "name": "辐射",
+          "code": "radio",
+          "unit": "wa/㎡"
+        },
+        {
+          "name": "蒸发",
+          "code": "ej",
+          "unit": "mm"
+        },
+        {
+          "name": "风向",
+          "code": "uc",
+          "unit": ""
+        },
+        {
+          "name": "风速",
+          "code": "us",
+          "unit": "m/s"
+        },
+        {
+          "name": "气压",
+          "code": "fl",
+          "unit": "pa"
+        },
+        {
+          "name": "湿度",
+          "code": "mst",
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "name": "智慧水务",
+      "code": "NCME",
+      "url": "https://sw.ispongecity.com/api/collect/monitorRecords/code/",
+      "indexes": [
+        {
+          "name": "断面面积",
+          "code": "AC",
+          "unit": "㎡"
+        },
+        {
+          "name": "瞬时水温",
+          "code": "C",
+          "unit": "℃"
+        },
+        {
+          "name": "时间步长码",
+          "code": "DRxnn",
+          "unit": "-"
+        },
+        {
+          "name": "瞬时流量",
+          "code": "Q",
+          "unit": "m3/s"
+        },
+        {
+          "name": "平均流速",
+          "code": "VA",
+          "unit": "m/s"
+        },
+        {
+          "name": "瞬时流速",
+          "code": "VJ",
+          "unit": "m/s"
+        },
+        {
+          "name": "电源电压",
+          "code": "VT",
+          "unit": "V"
+        },
+        {
+          "name": "液位1",
+          "code": "ZB",
+          "unit": "m"
+        },
+        {
+          "name": "液位2",
+          "code": "ZU",
+          "unit": "m"
+        },
+        {
+          "name": "报警信息",
+          "code": "ZT",
+          "unit": "-"
+        },
+        {
+          "name": "电池电压",
+          "code": "SVT",
+          "unit": "V"
+        },
+        {
+          "name": "设备温度",
+          "code": "TEM",
+          "unit": "℃"
+        },
+        {
+          "name": "设备湿度",
+          "code": "HUM",
+          "unit": "-"
+        }
+      ]
+    }
+  ]
+}

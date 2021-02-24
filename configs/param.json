@@ -1,0 +1,46 @@
+{
+  "center_code": {
+    "code": "01",
+    "hex_length": 4
+  },
+  "monitor_code": {
+    "code": "02",
+    "hex_length": 5
+  },
+  "monitor_time": {
+    "code": "03",
+    "hex_length": 6
+  },
+  "send_period": {
+    "code": "04",
+    "hex_length": 2
+  },
+  "collect_period": {
+    "code": "05",
+    "hex_length": 4
+  },
+  "level_base": {
+    "code": "06",
+    "hex_length": 4
+  },
+  "alarm_level": {
+    "code": "07",
+    "hex_length": 4
+  },
+  "danger_level": {
+    "code": "08",
+    "hex_length": 4
+  },
+  "alarm_quantity": {
+    "code": "09",
+    "hex_length": 4
+  },
+  "alarm_velocity": {
+    "code": "0a",
+    "hex_length": 4
+  },
+  "bluetooth": {
+    "code": "0b",
+    "hex_length": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "monitor-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "http-errors": "~1.6.2",
+    "jade": "~1.11.0",
+    "jimp": "^0.4.0",
+    "log4js": "^2.8.0",
+    "mathjs": "^5.0.3",
+    "moment": "^2.22.1",
+    "mongoose": "^5.6.9",
+    "morgan": "~1.9.0",
+    "multer": "^1.4.1",
+    "redis": "^2.8.0",
+    "request": "^2.88.0",
+    "rxjs": "^6.2.0",
+    "soap": "^0.29.0",
+    "socket.io": "^2.1.1"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "connection": "mongodb://localhost:27017/iotdb",
+  "port": "9501",
+  "tcp_port": "9500",
+  "redis_connection": "127.0.0.1",
+  "redis_port": "6379"
+}

@@ -1,0 +1,366 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var config = require('../config');
+var debug = require('debug')('monitor-api:server');
+var http = require('http');
+var request = require('request');
+var mongoose = require('mongoose');
+var emulator = require('../utils/emulator');
+var collector = require('../utils/collector');
+var statistic = require('../utils/statistic');
+var cache = require('../utils/cache');
+//var check = require('../utils/check');
+const alarm = require('../utils/alarm').event;
+
+const moment = require('moment');
+const comm = require("../utils/comm");
+const dbopt = require("../utils/dbopt");
+const byteopt = require("../utils/byteopt");
+const iotcache = require("../utils/iotcache");
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(config.port || '3004');
+app.set('port', port);
+
+mongoose.connect(config.connection, { useNewUrlParser: true, useUnifiedTopology: true }, function (err) {
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  }
+});
+mongoose.connection.on('open', function (ref) {
+  init();
+});
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+var m_socket;
+
+/**
+ * socket.io
+ */
+var io = require('socket.io')(server);
+io.on('connection', function (socket) {
+  //console.log('a user connected');
+  m_socket = socket;
+  socket.on('disconnect', function () {
+    //socket.leave(socket.user.group._id);
+    if (socket.user) {
+      socket.leave("all");
+      console.log('user ' + socket.user.username + ' disconnect');
+      socket.to("all").emit('logout', { type: '103', sender: socket.user._id, content: socket.user.username + "下线了!" });
+    }
+  });
+
+  socket.on('login', function (user) {
+    /*io.to("all").clients(function(error,item){
+        item.forEach(function(client){
+            const kick = io.to("all").sockets[client];
+            if (kick.user._id ===  user._id){
+                kick.leave("all");
+                kick.emit('kick', {type:'104',sender:user._id ,content:"账号在别处登录!"});
+            }
+        });
+    });*/
+    socket.user = user;
+    socket.join(["all"]);
+    //socket.join(["all",user.group._id]);
+    console.log('user ' + user.username + ' login');
+    socket.to("all").emit('login', { type: '101', sender: user._id, content: user.username + "上线了!" });
+  });
+
+  socket.on('logout', function () {
+    //socket.leave(socket.user.group._id);
+    if (socket.user) {
+      socket.leave("all");
+      console.log('user ' + socket.user.username + ' logout');
+      socket.to("all").emit('logout', { type: '102', sender: socket.user._id, content: socket.user.username + "下线了!" });
+    }
+  });
+
+  socket.on('publish_alarm', function (msg) {
+    if (socket.user) {
+      console.log('user ' + socket.user.username + ' public notify');
+      socket.to("all").emit('publish_alarm', { type: '102', sender: socket.user._id, content: "警报：" + msg.content });
+    }
+  });
+
+  socket.on('app_push', function (msg) {
+    if (socket.user) {
+      console.log('user ' + socket.user.username + ' public notify');
+      socket.to("all").emit('app_push', { type: '102', sender: socket.user._id, content: msg.content });
+    }
+  });
+
+});
+
+async function init () {
+  /**
+   * Start cache
+   */
+  await cache.init();
+  /**
+   * Start collect
+   */
+  //collector.init();
+  /**
+   * Start emulator
+   */
+  //emulator.init();
+
+  /**
+   * Start check
+   */
+  //check.init();
+
+  /**
+   * Start statistic
+   */
+  //statistic.init()
+}
+
+
+const net = require('net');
+const tcp_port = normalizePort(config.tcp_port || '8081');
+
+const tcp_server = net.createServer((socket) => {
+  socket.on('data', function (msg) {
+    const buffer = Buffer.from(msg);
+    const rcv = buffer.toString('hex');
+    console.log(moment().format("YYYYMMDDHHmmss") + '---rcv>>' + rcv);
+    //帧头字节或者正文长度不符合协议
+    if (rcv.slice(0, 2) != 'c6' || parseInt(rcv.slice(32, 36), 16) != (rcv.length - 40) / 2)
+      return;
+    //设备号
+    const code = rcv.slice(8, 18);
+    //正文内容
+    const content = rcv.slice(36, rcv.length - 4);
+    //下行回复帧
+    let rpl = "b5" + rcv.slice(2, 20) + moment().format("YYMMDDHHmmss");
+
+    let needreply = true;
+    //不同功能码不同处理
+    switch (rcv.slice(18, 20)) {
+      case '01'://c600000101200400010120010116091800003b67
+        console.log(moment().format("YYYYMMDDHHmmss") + '---Login>>' + code);
+        rpl = rpl + "0001" + "00";
+        break;
+      case '02'://c600020101200400010220041510484900005369
+        console.log(moment().format("YYYYMMDDHHmmss") + '---HB>>' + code);
+        rpl = rpl + "0001" + "00";
+        break;
+      case '03'://c6000101012004000103200409132101004d20010100000000050403010005000600000000000000000040a66667000000000000000040a66667000000000000000040a66667000000000000000040a66667001101010019000000000001930c9b
+        console.log(moment().format("YYYYMMDDHHmmss") + '---Data>>' + code);
+        comm.getRecordArr(code, content).then((records) => {
+          dbopt.saveMonitorRecords(records);
+          //console.log(records);
+        });
+        dbopt.log(code, "info", rcv, "采集");
+        rpl = rpl + "0001" + "00";
+        break;
+      case '04'://c6000301012004000104200413093818002520041309381403010040a00000050041880000060042200000010100110014010002030178f211
+        console.log(moment().format("YYYYMMDDHHmmss") + '---Alarm>>' + code);
+        comm.getAlarm(code, content).then((alarm) => dbopt.addMonitorAlarm(alarm));
+        dbopt.log(code, "warning", rcv, "采集");
+        rpl = rpl + "0001" + "00";
+        break;
+      case '05'://
+        console.log(moment().format("YYYYMMDDHHmmss") + '---Config>>' + code);
+        needreply = false;
+        if (rcv.slice(36, 38) == "00") {
+          if (iotcache.getConfig(code))
+            iotcache.removeConfig(code);
+          dbopt.log(code, "info", rcv, "配置");
+        }
+        break;
+      case '06'://
+        console.log(moment().format("YYYYMMDDHHmmss") + '---Req>>' + code);
+        needreply = false;
+        comm.getParams(code, content);
+        if (iotcache.getReqParams(code))
+          iotcache.removeReqParams(code);
+        dbopt.log(code, "info", rcv, "查询");
+        break;
+      case '07'://
+        console.log(moment().format("YYYYMMDDHHmmss") + '---Update>>' + code);
+        needreply = false;
+        if (rcv.slice(36, 38) == "00") {
+          if (iotcache.getUpdate(code))
+            iotcache.removeUpdate(code);
+          dbopt.log(code, "info", rcv, "维护");
+        }
+        break;
+      case '08'://待开发
+        console.log(moment().format("YYYYMMDDHHmmss") + '---Package>>' + code);
+        needreply = false;
+        if (rcv.slice(36, 38) == "00") {
+          if (iotcache.getUpdate(code))
+            iotcache.removeUpdate(code);
+          dbopt.log(code, "info", rcv, "维护");
+        }
+        break;
+      default:
+        rpl = rpl + "0001" + "01";
+        break;
+    }
+
+    /*
+    上位机发起的下行配置指令
+    */
+    const configStr = iotcache.getConfig(code);
+    if (configStr) {
+      let totalsend = "b50000" + rcv.slice(6, 8) + code + "05" + moment().format("YYMMDDHHmmss");
+      totalsend = totalsend + byteopt.int2TwoHex(configStr.length / 2) + configStr;
+      const sendBuff = comm.getSendBuffer(totalsend);
+      if (socket.writable) {
+        socket.write(sendBuff);
+        console.log(moment().format("YYYYMMDDHHmmss") + '---sendConfig>>' + totalsend);
+      }
+    }
+
+    /*
+       上位机发起的下行查询参数指令
+       */
+    const reqStr = iotcache.getReqParams(code);
+    if (reqStr) {
+      let totalsend = "b50000" + rcv.slice(6, 8) + code + "06" + moment().format("YYMMDDHHmmss");
+      totalsend = totalsend + byteopt.int2TwoHex(reqStr.length / 2) + reqStr;
+      const sendBuff = comm.getSendBuffer(totalsend);
+      if (socket.writable) {
+        socket.write(sendBuff);
+        console.log(moment().format("YYYYMMDDHHmmss") + '---sendReq>>' + totalsend);
+      }
+    }
+
+    /*
+       上位机发起的下行维护参数指令
+       */
+    const updateStr = iotcache.getUpdate(code);
+    if (updateStr) {
+      let totalsend = "b50000" + rcv.slice(6, 8) + code + "07" + moment().format("YYMMDDHHmmss");
+      totalsend = totalsend + byteopt.int2TwoHex(updateStr.length / 2) + updateStr;
+      const sendBuff = comm.getSendBuffer(totalsend);
+      if (socket.writable) {
+        socket.write(sendBuff);
+        console.log(moment().format("YYYYMMDDHHmmss") + '---sendUpdate>>' + totalsend);
+      }
+    }
+
+    /*
+       上位机发起的多包更新，待开发
+       */
+    const temp = iotcache.getPkg(code);
+    if (temp) {
+      let totalsend = "b50000" + rcv.slice(6, 8) + code + "08" + moment().format("YYMMDDHHmmss");
+      const pkg = byteopt.int2TwoHex(totalpkg) + "0001" + package.slice(0, 512).toString('hex');
+      totalsend = totalsend + byteopt.int2TwoHex(pkg.length / 2) + pkg;
+      const sendBuff = comm.getSendBuffer(totalsend);
+      if (socket.writable) {
+        socket.write(sendBuff);
+        console.log(moment().format("YYYYMMDDHHmmss") + '---sendPackage>>' + totalsend);
+      }
+    }
+
+
+
+    if (needreply) {
+      //上行指令的下行回复
+      const replybuffer = comm.getSendBuffer(rpl);
+      if (socket.writable) {
+        socket.write(replybuffer);
+        console.log(moment().format("YYYYMMDDHHmmss") + '---rpl>>' + rpl);
+      }
+    }
+  });
+
+  socket.on('close', function (data) {
+    console.log(moment().format("YYYYMMDDHHmmss") + '** CLOSE **');
+  });
+
+  socket.on('error', function (err) {
+    console.log(moment().format("YYYYMMDDHHmmss") + '** ERROR **' + err.stack);
+  });
+});
+
+tcp_server.listen(tcp_port);
+console.log("TCP server accepting connection on port: " + tcp_port);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort (val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError (error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+*/
+
+function onListening () {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
